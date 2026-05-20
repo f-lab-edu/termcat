@@ -24,6 +24,7 @@ npm run build:mac     # .dmg 패키지 빌드
 | 문서 | 내용 |
 |------|------|
 | [기능 명세 인덱스](./docs/index.md) | 전체 기능 목록 및 아키텍처 |
+| [아키텍처 원칙](./docs/conventions/architecture.md) | 단일 책임, 파일 크기, 단방향 레이어 |
 | [TypeScript 컨벤션](./docs/conventions/typescript.md) | 타입, export, 에러 처리 |
 | [Electron 패턴](./docs/conventions/electron.md) | IPC, 보안, Tray, 생명주기 |
 | [React 컨벤션](./docs/conventions/react.md) | 컴포넌트, Zustand, 스타일링 |

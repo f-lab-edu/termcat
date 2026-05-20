@@ -52,6 +52,7 @@ TrayAnimator (고양이 아이콘 교체)
 
 | 문서 | 내용 |
 |------|------|
+| [아키텍처](./conventions/architecture.md) | 단일 책임, 파일 크기, 단방향 레이어 |
 | [TypeScript](./conventions/typescript.md) | 타입 선언, export 규칙, 에러 처리 |
 | [Electron](./conventions/electron.md) | IPC 패턴, 보안 설정, Tray 관리 |
 | [React](./conventions/react.md) | 컴포넌트 구조, Zustand, vanilla-extract |
