@@ -1,5 +1,5 @@
-import { app, Tray, Menu, nativeImage } from 'electron'
 import { electronApp, optimizer } from '@electron-toolkit/utils'
+import { app, Menu, nativeImage,Tray } from 'electron'
 import { join } from 'path'
 
 let tray: Tray | null = null
@@ -13,7 +13,7 @@ function createTray(): void {
   const contextMenu = Menu.buildFromTemplate([
     { label: 'termcat', enabled: false },
     { type: 'separator' },
-    { label: 'Quit', role: 'quit' }
+    { label: 'Quit', role: 'quit' },
   ])
 
   tray.setContextMenu(contextMenu)
