@@ -48,6 +48,20 @@ IPC → Electron main process
 TrayAnimator (고양이 아이콘 교체)
 ```
 
+## 컨벤션 문서
+
+| 문서 | 내용 |
+|------|------|
+| [아키텍처](./conventions/architecture.md) | 단일 책임, 파일 크기, 단방향 레이어 |
+| [TypeScript](./conventions/typescript.md) | 타입 선언, export 규칙, 에러 처리 |
+| [Electron](./conventions/electron.md) | IPC 패턴, 보안 설정, Tray 관리 |
+| [React](./conventions/react.md) | 컴포넌트 구조, Zustand, vanilla-extract |
+| [Git](./conventions/git.md) | 브랜치 전략, 커밋 메시지, PR 규칙 |
+| [네이밍](./conventions/naming.md) | 파일, 변수, IPC 채널명 규칙 |
+| [에러 핸들링](./conventions/error-handling.md) | Error Boundary, IPC 에러, ParseError, 전역 수집 |
+
+---
+
 ## 프로세스 경계
 
 | 프로세스 | 역할 |
