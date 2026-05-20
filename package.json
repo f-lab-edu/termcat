@@ -1,0 +1,40 @@
+{
+  "name": "termcat",
+  "version": "0.1.0",
+  "description": "AI 터미널 세션의 토큰 속도를 메뉴바 고양이 회전으로 표현하는 macOS 데스크톱 앱",
+  "main": "./out/main/index.js",
+  "homepage": "https://github.com/f-lab-edu/termcat",
+  "author": "baemki1213",
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "npm run typecheck && electron-vite build",
+    "start": "electron-vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json --composite false && tsc --noEmit -p tsconfig.web.json --composite false",
+    "lint": "eslint . --ext .ts,.tsx",
+    "build:mac": "electron-vite build && electron-builder --mac",
+    "postinstall": "electron-rebuild"
+  },
+  "dependencies": {
+    "@electron-toolkit/preload": "^3.0.1",
+    "@electron-toolkit/utils": "^3.0.0",
+    "node-pty": "^1.0.0",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@electron-toolkit/tsconfig": "^1.0.1",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vanilla-extract/css": "^1.15.0",
+    "@vanilla-extract/vite-plugin": "^4.0.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3",
+    "electron-rebuild": "^3.2.9",
+    "electron-vite": "^2.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.5.2",
+    "vite": "^5.3.1"
+  }
+}
