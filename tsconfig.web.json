@@ -3,9 +3,9 @@
   "include": ["src/renderer/src/**/*"],
   "compilerOptions": {
     "composite": true,
-    "baseUrl": ".",
+    "moduleResolution": "bundler",
     "paths": {
-      "@renderer/*": ["src/renderer/src/*"]
+      "@renderer/*": ["./src/renderer/src/*"]
     }
   }
 }
