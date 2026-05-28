@@ -31,6 +31,7 @@ npm run build:mac     # .dmg 패키지 빌드
 | [Git 워크플로](./docs/conventions/git.md) | 브랜치, 커밋 메시지, PR |
 | [네이밍 규칙](./docs/conventions/naming.md) | 파일, 변수, IPC 채널명 |
 | [에러 핸들링](./docs/conventions/error-handling.md) | Error Boundary, IPC 에러, ParseError, 전역 수집 |
+| [좋은 코드 원칙](./docs/conventions/code-quality.md) | 가독성·예측 가능성·응집도·결합도 |
 
 ---
 
@@ -59,3 +60,17 @@ resources/
 - `export default` 금지 — named export만 사용
 - `console.log` 프로덕션 코드 금지 — `electron-log` 사용
 - 컴포넌트에서 `window.electron.*` 직접 호출 금지 — 훅으로 래핑
+
+## 좋은 코드 원칙 (코드 작성 시 항상 참조)
+
+> 전체 내용: [`docs/conventions/code-quality.md`](./docs/conventions/code-quality.md)
+
+코드를 작성할 때 아래 네 가지 기준으로 스스로 검토한다.
+
+**가독성** — 함수 하나에서 다루는 개념은 6~7개 이하. 복잡한 조건은 변수로 이름을 붙인다. ternary 중첩은 2단계 이하. 같은 함수 안에서 추상화 수준을 통일한다.
+
+**예측 가능성** — 비슷한 이름의 함수는 반환 타입이 일치한다. 함수 안에 숨겨진 부작용은 이름이나 시그니처에 드러낸다.
+
+**응집도** — 같이 변경되는 파일은 같은 디렉터리에 둔다. 매직 넘버는 이름 있는 상수로 추출한다.
+
+**결합도** — Props Drilling은 3단계 초과 금지. 억지로 공통화해서 결합도가 높아진다면 전략적 중복을 허용한다.
