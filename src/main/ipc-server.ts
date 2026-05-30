@@ -1,7 +1,8 @@
-import type { CliEvent } from '@shared/types'
 import { unlinkSync } from 'fs'
 import type { Server, Socket } from 'net'
 import { createServer } from 'net'
+
+import type { CliEvent } from '@shared/types'
 
 function getSocketPath(): string {
   const uid = process.getuid?.() ?? 'default'
