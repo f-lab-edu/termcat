@@ -1,13 +1,23 @@
 import { electronApp, optimizer } from '@electron-toolkit/utils'
-import { app, Menu, nativeImage,Tray } from 'electron'
+import { createIpcServer } from '@main/ipc-server'
+import { createSessionManager } from '@main/session-manager'
+import { createTrayAnimator } from '@main/tray-animator'
+import type { SpeedLevel } from '@shared/types'
+import { app, Menu, nativeImage, Tray } from 'electron'
 import { join } from 'path'
 
-let tray: Tray | null = null
+const TICK_MS = 100
 
-function createTray(): void {
-  const iconPath = join(__dirname, '../../resources/icon.png')
-  const icon = nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 })
-  tray = new Tray(icon)
+function getSpritesDir(): string {
+  return join(__dirname, '../../resources/sprites')
+}
+
+function createTray(): Tray {
+  const iconPath = join(getSpritesDir(), 'cat-f01.png')
+  const icon = nativeImage.createFromPath(iconPath)
+  icon.setTemplateImage(true)
+
+  const tray = new Tray(icon)
   tray.setToolTip('termcat')
 
   const contextMenu = Menu.buildFromTemplate([
@@ -17,6 +27,40 @@ function createTray(): void {
   ])
 
   tray.setContextMenu(contextMenu)
+  return tray
+}
+
+function startCore(tray: Tray): () => void {
+  const sessionManager = createSessionManager()
+  const animator = createTrayAnimator(tray, getSpritesDir())
+  animator.setLevel('idle')
+
+  const ipcServer = createIpcServer((event) => {
+    if (event.type === 'session:start') {
+      sessionManager.onStart(event.pid, event.command)
+    } else if (event.type === 'session:data') {
+      sessionManager.onData(event.pid, event.chars, event.timestamp)
+    } else if (event.type === 'session:exit') {
+      sessionManager.onExit(event.pid)
+    }
+  })
+
+  ipcServer.start()
+
+  let currentLevel: SpeedLevel = 'idle'
+
+  setInterval(() => {
+    const newLevel = sessionManager.tick()
+    if (newLevel !== currentLevel) {
+      currentLevel = newLevel
+      animator.setLevel(newLevel)
+    }
+  }, TICK_MS)
+
+  return () => {
+    ipcServer.stop()
+    animator.destroy()
+  }
 }
 
 app.whenReady().then(() => {
@@ -30,8 +74,10 @@ app.whenReady().then(() => {
     app.dock.hide()
   }
 
-  createTray()
+  const tray = createTray()
+  const stop = startCore(tray)
+
+  app.on('before-quit', stop)
 })
 
-// tray-only app — keep running even with no windows open
 app.on('window-all-closed', () => {})

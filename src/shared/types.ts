@@ -15,3 +15,20 @@ export interface SessionStats {
   isActive: boolean
   sessionStartedAt: string | null
 }
+
+export type SpeedLevel = 'idle' | 'slow' | 'mid' | 'fast'
+
+export interface SpeedThresholds {
+  slow: number
+  mid: number
+}
+
+export const DEFAULT_SPEED_THRESHOLDS: SpeedThresholds = {
+  slow: 10,
+  mid: 80,
+}
+
+export type CliEvent =
+  | { type: 'session:start'; pid: number; command: string }
+  | { type: 'session:data'; pid: number; chars: number; timestamp: number }
+  | { type: 'session:exit'; pid: number; code: number }
