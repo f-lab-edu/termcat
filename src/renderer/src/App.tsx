@@ -1,4 +1,4 @@
-import type { SessionStats } from '../../shared/types'
+import type { SessionStats } from '@shared/types'
 
 const MOCK_STATS: SessionStats = {
   model: 'claude-sonnet-4-6',
