@@ -19,14 +19,14 @@ function createTray(): Tray {
 
   const tray = new Tray(icon)
   tray.setToolTip('termcat')
+  tray.setContextMenu(
+    Menu.buildFromTemplate([
+      { label: 'termcat', enabled: false },
+      { type: 'separator' },
+      { label: 'Quit', role: 'quit' },
+    ])
+  )
 
-  const contextMenu = Menu.buildFromTemplate([
-    { label: 'termcat', enabled: false },
-    { type: 'separator' },
-    { label: 'Quit', role: 'quit' },
-  ])
-
-  tray.setContextMenu(contextMenu)
   return tray
 }
 
