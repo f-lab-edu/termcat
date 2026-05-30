@@ -1,10 +1,13 @@
 import { electronApp, optimizer } from '@electron-toolkit/utils'
-import { createIpcServer } from '@main/ipc-server'
-import { createSessionManager } from '@main/session-manager'
-import { createTrayAnimator } from '@main/tray-animator'
-import type { SpeedLevel } from '@shared/types'
 import { app, Menu, nativeImage, Tray } from 'electron'
 import { join } from 'path'
+
+import { createIpcServer } from '@main/ipc-server'
+import { hasAlias, openOnboardingWindow } from '@main/onboarding'
+import { createSessionManager } from '@main/session-manager'
+import { store } from '@main/store'
+import { createTrayAnimator } from '@main/tray-animator'
+import type { SpeedLevel } from '@shared/types'
 
 const TICK_MS = 100
 
@@ -78,6 +81,10 @@ app.whenReady().then(() => {
   const stop = startCore(tray)
 
   app.on('before-quit', stop)
+
+  if (!store.get('onboardingDone') && !hasAlias()) {
+    openOnboardingWindow()
+  }
 })
 
 app.on('window-all-closed', () => {})
