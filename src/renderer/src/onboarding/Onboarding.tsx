@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { Text } from '@renderer/components/index'
+import { CatSprite, Stack } from '@renderer/components/index'
 
 import { OnboardingPrompt } from './components/OnboardingPrompt'
 import { OnboardingSuccess } from './components/OnboardingSuccess'
@@ -28,12 +28,18 @@ export function Onboarding(): JSX.Element {
 
   return (
     <div className={s.container}>
-      <Text variant="emoji">🐱</Text>
-      {status === 'done' ? (
-        <OnboardingSuccess rcPath={rcPath} />
-      ) : (
-        <OnboardingPrompt isError={status === 'error'} onApply={handleApply} onSkip={handleSkip} />
-      )}
+      <Stack direction="column" align="center" gap="3">
+        <CatSprite />
+        {status === 'done' ? (
+          <OnboardingSuccess rcPath={rcPath} />
+        ) : (
+          <OnboardingPrompt
+            isError={status === 'error'}
+            onApply={handleApply}
+            onSkip={handleSkip}
+          />
+        )}
+      </Stack>
     </div>
   )
 }
