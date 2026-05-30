@@ -2,10 +2,7 @@ import type { CliEvent } from '@shared/types'
 import type { Socket } from 'net'
 import { createConnection } from 'net'
 
-function getSocketPath(): string {
-  const uid = process.getuid?.() ?? 'default'
-  return `/tmp/termcat-${uid}.sock`
-}
+import { getSocketPath } from './socket-path'
 
 export type IpcClient = ReturnType<typeof createIpcClient>
 

@@ -1,12 +1,7 @@
-import { createSpeedMonitor, type SpeedMonitor } from '@main/speed-monitor'
 import type { SpeedLevel } from '@shared/types'
 
-interface ActiveSession {
-  pid: number
-  command: string
-  startedAt: number
-  monitor: SpeedMonitor
-}
+import { createSpeedMonitor } from './speed-monitor'
+import type { ActiveSession } from './types'
 
 const LEVEL_RANK: Record<SpeedLevel, number> = { idle: 0, slow: 1, mid: 2, fast: 3 }
 

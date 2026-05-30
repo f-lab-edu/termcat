@@ -1,5 +1,5 @@
-import { createIpcClient } from '@cli/ipc-client'
-import { runPtyWrapper } from '@cli/pty-wrapper'
+import { createIpcClient } from '@cli/ipc'
+import { runPtyWrapper } from '@cli/pty'
 
 function main(): void {
   const [, , command, ...args] = process.argv

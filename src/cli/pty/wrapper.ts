@@ -1,4 +1,4 @@
-import type { IpcClient } from '@cli/ipc-client'
+import type { IpcClient } from '@cli/ipc/index'
 import pty from 'node-pty'
 
 const IPC_TICK_MS = 100

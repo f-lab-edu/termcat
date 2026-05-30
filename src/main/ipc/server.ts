@@ -3,10 +3,7 @@ import { unlinkSync } from 'fs'
 import type { Server, Socket } from 'net'
 import { createServer } from 'net'
 
-function getSocketPath(): string {
-  const uid = process.getuid?.() ?? 'default'
-  return `/tmp/termcat-${uid}.sock`
-}
+import { getSocketPath } from './socket-path'
 
 function handleConnection(socket: Socket, onEvent: (event: CliEvent) => void): void {
   const sessionPids = new Set<number>()
