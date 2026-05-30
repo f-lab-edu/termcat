@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { CatSprite, Stack } from '@renderer/components/index'
+import { CatSprite, Stack, SwitchCase } from '@renderer/components/index'
 
 import { OnboardingPrompt } from './components/OnboardingPrompt'
 import { OnboardingSuccess } from './components/OnboardingSuccess'
@@ -30,15 +30,14 @@ export function Onboarding(): JSX.Element {
     <div className={s.container}>
       <Stack direction="column" align="center" gap="3">
         <CatSprite />
-        {status === 'done' ? (
-          <OnboardingSuccess rcPath={rcPath} />
-        ) : (
-          <OnboardingPrompt
-            isError={status === 'error'}
-            onApply={handleApply}
-            onSkip={handleSkip}
-          />
-        )}
+        <SwitchCase
+          value={status}
+          caseBy={{
+            idle: <OnboardingPrompt isError={false} onApply={handleApply} onSkip={handleSkip} />,
+            error: <OnboardingPrompt isError={true} onApply={handleApply} onSkip={handleSkip} />,
+            done: <OnboardingSuccess rcPath={rcPath} />,
+          }}
+        />
       </Stack>
     </div>
   )
