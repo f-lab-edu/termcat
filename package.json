@@ -23,7 +23,7 @@
     "@electron-toolkit/utils": "^3.0.0",
     "@vanilla-extract/recipes": "^0.5.7",
     "@vanilla-extract/sprinkles": "^1.6.5",
-    "electron-store": "^11.0.2",
+    "electron-store": "^8.2.0",
     "node-pty": "^1.0.0",
     "zustand": "^5.0.0"
   },
