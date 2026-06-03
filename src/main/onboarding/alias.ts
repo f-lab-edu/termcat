@@ -1,14 +1,6 @@
 import { is } from '@electron-toolkit/utils'
 import { app } from 'electron'
-import {
-  appendFileSync,
-  chmodSync,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  symlinkSync,
-  unlinkSync,
-} from 'fs'
+import { appendFileSync, existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs'
 import { homedir } from 'os'
 import { join } from 'path'
 
@@ -44,7 +36,15 @@ export function hasAlias(): boolean {
 function installCli(): void {
   if (is.dev) return
 
-  const cliPath = join(app.getAppPath(), 'out', 'main', 'cli', 'index.js')
+  const electronBin = process.execPath
+  const cliPath = join(
+    app.getAppPath().replace('app.asar', 'app.asar.unpacked'),
+    'out',
+    'main',
+    'cli',
+    'index.js'
+  )
+  const script = `#!/bin/sh\nexec env ELECTRON_RUN_AS_NODE=1 "${electronBin}" "${cliPath}" "$@"\n`
 
   if (!existsSync(LOCAL_BIN_DIR)) {
     mkdirSync(LOCAL_BIN_DIR, { recursive: true })
@@ -52,15 +52,15 @@ function installCli(): void {
 
   try {
     if (existsSync(SYMLINK_PATH)) unlinkSync(SYMLINK_PATH)
-    symlinkSync(cliPath, SYMLINK_PATH)
-    chmodSync(cliPath, '755')
+    writeFileSync(SYMLINK_PATH, script, { encoding: 'utf-8', mode: 0o755 })
   } catch (err) {
-    log.warn('failed to install CLI symlink:', err)
+    log.warn('failed to install CLI script:', err)
   }
 }
 
 export function appendAlias(): string {
   const rcPath = getRcPath()
+  if (hasAlias()) return rcPath
   appendFileSync(rcPath, ALIAS_BLOCK, 'utf-8')
   installCli()
   return rcPath

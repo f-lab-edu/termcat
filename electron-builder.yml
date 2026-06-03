@@ -24,4 +24,8 @@ mac:
 dmg:
   artifactName: termcat-${version}.dmg
 
+asarUnpack:
+  - "out/main/cli/**"
+  - "node_modules/node-pty/**"
+
 npmRebuild: false

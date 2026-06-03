@@ -24,8 +24,8 @@ export interface SpeedThresholds {
 }
 
 export const DEFAULT_SPEED_THRESHOLDS: SpeedThresholds = {
-  slow: 10,
-  mid: 80,
+  slow: 20,
+  mid: 100,
 }
 
 export type CliEvent =

@@ -28,10 +28,6 @@ export function Onboarding(): JSX.Element {
     return () => clearTimeout(id)
   }, [status])
 
-  async function handleSkip(): Promise<void> {
-    await window.onboarding.skip()
-  }
-
   return (
     <div className={s.container}>
       <Stack direction="column" align="center" gap="3">
@@ -39,8 +35,8 @@ export function Onboarding(): JSX.Element {
         <SwitchCase
           value={status}
           caseBy={{
-            idle: <OnboardingPrompt isError={false} onApply={handleApply} onSkip={handleSkip} />,
-            error: <OnboardingPrompt isError={true} onApply={handleApply} onSkip={handleSkip} />,
+            idle: <OnboardingPrompt isError={false} onApply={handleApply} />,
+            error: <OnboardingPrompt isError={true} onApply={handleApply} />,
             done: <OnboardingSuccess rcPath={rcPath} />,
           }}
         />
