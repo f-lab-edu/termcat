@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { CatSprite, Stack, SwitchCase } from '@renderer/components/index'
 
@@ -21,6 +21,12 @@ export function Onboarding(): JSX.Element {
       setStatus('error')
     }
   }
+
+  useEffect(() => {
+    if (status !== 'done') return
+    const id = setTimeout(() => window.onboarding.close(), 2000)
+    return () => clearTimeout(id)
+  }, [status])
 
   async function handleSkip(): Promise<void> {
     await window.onboarding.skip()

@@ -5,6 +5,7 @@ declare global {
     electron: ElectronAPI
     onboarding: {
       apply: () => Promise<string>
+      close: () => Promise<void>
       skip: () => Promise<void>
     }
   }

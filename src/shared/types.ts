@@ -4,7 +4,7 @@ export type ClaudeModel =
   | 'claude-haiku-4-5-20251001'
   | (string & {})
 
-export type IpcChannel = 'onboarding:apply' | 'onboarding:skip'
+export type IpcChannel = 'onboarding:apply' | 'onboarding:close' | 'onboarding:skip'
 
 export interface SessionStats {
   model: ClaudeModel | null

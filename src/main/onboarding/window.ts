@@ -26,8 +26,11 @@ export function openOnboardingWindow(): void {
   ipcMain.handleOnce('onboarding:apply', () => {
     const rcPath = appendAlias()
     store.set('onboardingDone', true)
-    win.close()
     return rcPath
+  })
+
+  ipcMain.handleOnce('onboarding:close', () => {
+    win.close()
   })
 
   ipcMain.handleOnce('onboarding:skip', () => {
