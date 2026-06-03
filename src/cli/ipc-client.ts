@@ -52,6 +52,21 @@ export function createIpcClient() {
         process.stderr.write(`[ipc-client] failed to send event: ${err}\n`)
       }
     },
+    sendAndExit(event: CliEvent, exitCode: number): void {
+      if (!connected || !socket) {
+        process.exit(exitCode)
+        return
+      }
+      try {
+        socket.write(JSON.stringify(event) + '\n', () => {
+          socket?.end()
+          process.exit(exitCode)
+        })
+      } catch (err) {
+        process.stderr.write(`[ipc-client] failed to send event: ${err}\n`)
+        process.exit(exitCode)
+      }
+    },
     disconnect(): void {
       socket?.destroy()
       socket = null

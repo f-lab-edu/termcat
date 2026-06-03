@@ -12,7 +12,7 @@ export function createSpeedMonitor(thresholds: SpeedThresholds = DEFAULT_SPEED_T
   let pendingCount = 0
 
   function classify(cps: number): SpeedLevel {
-    if (cps <= 0) return 'slow'
+    if (cps <= 0) return 'idle'
     if (cps <= thresholds.slow) return 'slow'
     if (cps <= thresholds.mid) return 'mid'
     return 'fast'

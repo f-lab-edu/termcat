@@ -39,8 +39,6 @@ export function runPtyWrapper(command: string, args: string[], ipc: IpcClient): 
 
   shell.onExit(({ exitCode }) => {
     clearInterval(ticker)
-    ipc.send({ type: 'session:exit', pid: shell.pid, code: exitCode })
-    ipc.disconnect()
-    process.exit(exitCode)
+    ipc.sendAndExit({ type: 'session:exit', pid: shell.pid, code: exitCode }, exitCode)
   })
 }
