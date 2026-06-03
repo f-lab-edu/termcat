@@ -2,7 +2,10 @@ import { unlinkSync } from 'fs'
 import type { Server, Socket } from 'net'
 import { createServer } from 'net'
 
+import { createLogger } from '@main/logger'
 import type { CliEvent } from '@shared/types'
+
+const log = createLogger('ipc-server')
 
 function getSocketPath(): string {
   const uid = process.getuid?.() ?? 'default'
@@ -49,7 +52,9 @@ function handleConnection(socket: Socket, onEvent: (event: CliEvent) => void): v
         if (event.type === 'session:start') sessionPids.add(event.pid)
         if (event.type === 'session:exit') sessionPids.delete(event.pid)
         onEvent(event)
-      } catch {}
+      } catch (err) {
+        log.warn('failed to parse event:', err)
+      }
     }
   })
 
@@ -72,14 +77,20 @@ export function createIpcServer(onEvent: (event: CliEvent) => void) {
     start(): void {
       try {
         unlinkSync(socketPath)
-      } catch {}
+      } catch (err) {
+        if ((err as NodeJS.ErrnoException).code !== 'ENOENT')
+          log.warn('failed to unlink socket:', err)
+      }
       server.listen(socketPath)
     },
     stop(): void {
       server.close()
       try {
         unlinkSync(socketPath)
-      } catch {}
+      } catch (err) {
+        if ((err as NodeJS.ErrnoException).code !== 'ENOENT')
+          log.warn('failed to unlink socket:', err)
+      }
     },
   }
 }

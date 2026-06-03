@@ -48,7 +48,9 @@ export function createIpcClient() {
       if (!connected || !socket) return
       try {
         socket.write(JSON.stringify(event) + '\n')
-      } catch {}
+      } catch (err) {
+        process.stderr.write(`[ipc-client] failed to send event: ${err}\n`)
+      }
     },
     disconnect(): void {
       socket?.destroy()
