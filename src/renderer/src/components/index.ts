@@ -1,4 +1,6 @@
 export { Badge } from './Badge'
 export { Button } from './Button'
+export { CatSprite } from './CatSprite'
 export { Stack } from './Stack'
+export { SwitchCase } from './SwitchCase'
 export { Text } from './Text'

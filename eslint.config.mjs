@@ -40,10 +40,10 @@ export default [
         'error',
         {
           groups: [
-            ['^node:'],          // Node.js 내장
-            ['^@?\\w'],          // 외부 패키지
-            ['^@/'],             // 내부 절대 경로
-            ['^\\.\\./','^\\.'], // 상대 경로
+            ['^node:'],                                        // Node.js 내장
+            ['^@?\\w'],                                        // 외부 패키지 (react, electron 등)
+            ['^@(renderer|shared|main|cli)(/|$)'],             // 내부 path alias
+            ['^\\.\\./','^\\.'],                               // 상대 경로
           ],
         },
       ],

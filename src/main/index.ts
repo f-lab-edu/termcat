@@ -1,10 +1,13 @@
-import { electronApp, optimizer } from '@electron-toolkit/utils'
-import { createIpcServer } from '@main/ipc-server'
-import { createSessionManager } from '@main/session-manager'
-import { createTrayAnimator } from '@main/tray-animator'
-import type { SpeedLevel } from '@shared/types'
+import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, Menu, nativeImage, Tray } from 'electron'
 import { join } from 'path'
+
+import { createIpcServer } from '@main/ipc-server'
+import { hasAlias, openOnboardingWindow } from '@main/onboarding'
+import { createSessionManager } from '@main/session-manager'
+import { store } from '@main/store'
+import { createTrayAnimator } from '@main/tray-animator'
+import type { SpeedLevel } from '@shared/types'
 
 const TICK_MS = 100
 
@@ -19,11 +22,25 @@ function createTray(): Tray {
 
   const tray = new Tray(icon)
   tray.setToolTip('termcat')
+  const devItems = is.dev
+    ? [
+        { type: 'separator' as const },
+        {
+          label: '[Dev] Reset Onboarding',
+          click: () => {
+            store.set('onboardingDone', false)
+            openOnboardingWindow()
+          },
+        },
+      ]
+    : []
+
   tray.setContextMenu(
     Menu.buildFromTemplate([
       { label: 'termcat', enabled: false },
       { type: 'separator' },
       { label: 'Quit', role: 'quit' },
+      ...devItems,
     ])
   )
 
@@ -78,6 +95,10 @@ app.whenReady().then(() => {
   const stop = startCore(tray)
 
   app.on('before-quit', stop)
+
+  if (!store.get('onboardingDone') && !hasAlias()) {
+    openOnboardingWindow()
+  }
 })
 
 app.on('window-all-closed', () => {})

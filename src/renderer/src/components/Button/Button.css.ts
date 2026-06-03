@@ -1,5 +1,6 @@
-import { vars } from '@renderer/styles/tokens.css'
 import { recipe } from '@vanilla-extract/recipes'
+
+import { vars } from '@renderer/styles/tokens.css'
 
 export const button = recipe({
   base: {

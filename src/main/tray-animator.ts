@@ -1,7 +1,8 @@
-import type { SpeedLevel } from '@shared/types'
 import type { Tray } from 'electron'
 import { nativeImage } from 'electron'
 import { join } from 'path'
+
+import type { SpeedLevel } from '@shared/types'
 
 const FRAME_COUNT = 8
 const FRAME_INTERVALS: Record<Exclude<SpeedLevel, 'idle'>, number> = {
