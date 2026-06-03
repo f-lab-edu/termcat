@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "AI 터미널 세션의 토큰 속도를 메뉴바 고양이 회전으로 표현하는 macOS 데스크톱 앱",
   "main": "./out/main/index.js",
+  "bin": {
+    "termcat": "./out/main/cli/index.js"
+  },
   "homepage": "https://github.com/f-lab-edu/termcat",
   "author": "baemki1213",
   "license": "MIT",
@@ -16,6 +19,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
     "build:mac": "electron-vite build && electron-builder --mac",
+    "dist": "npm run build && electron-builder --mac",
     "postinstall": "electron-rebuild"
   },
   "dependencies": {

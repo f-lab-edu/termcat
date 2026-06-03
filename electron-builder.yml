@@ -1,42 +1,27 @@
 appId: com.termcat
 productName: termcat
-directories:
-  buildResources: resources
+
 files:
-  - '!**/.vscode/*'
+  - out/**
+  - resources/**
   - '!src/*'
-  - '!electron.vite.config.{js,ts,mjs,cjs}'
-  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,RELEASES.md}'
-  - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
+  - '!**/.vscode/*'
+  - '!{.eslintignore,.eslintrc.cjs,.prettierignore,.prettierrc.yaml}'
+  - '!{.env,.env.*,.npmrc}'
   - '!{tsconfig.json,tsconfig.*}'
-  - '!test/{*,**/*}'
-afterSign: build/notarize.js
+
+extraResources:
+  - from: resources/sprites
+    to: sprites
+
 mac:
-  entitlementsInherit: build/entitlements.mac.plist
-  extendInfo:
-    - NSMicrophoneUsageDescription: false
-    - NSCameraUsageDescription: false
-  notarize: false
   target:
     - target: dmg
-      arch: [x64, arm64]
+      arch: [universal]
+  category: public.app-category.utilities
   icon: resources/icon.icns
+
 dmg:
   artifactName: termcat-${version}.dmg
-nsis:
-  artifactName: termcat-${version}-setup.exe
-  shortcutName: termcat
-  uninstallDisplayName: termcat
-  createDesktopShortcut: always
-linux:
-  target:
-    - AppImage
-    - snap
-  maintainer: f-lab-edu
-  category: Utility
-appImage:
-  artifactName: termcat-${version}.AppImage
+
 npmRebuild: false
-publish:
-  provider: generic
-  url: https://example.com/auto-update
