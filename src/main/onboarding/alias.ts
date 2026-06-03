@@ -61,6 +61,7 @@ function installCli(): void {
 
 export function appendAlias(): string {
   const rcPath = getRcPath()
+  if (hasAlias()) return rcPath
   appendFileSync(rcPath, ALIAS_BLOCK, 'utf-8')
   installCli()
   return rcPath
