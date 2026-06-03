@@ -19,6 +19,9 @@ export default defineConfig({
           index: resolve('src/main/index.ts'),
           'cli/index': resolve('src/cli/index.ts'),
         },
+        output: {
+          banner: (chunk) => (chunk.name === 'cli/index' ? '#!/usr/bin/env node' : ''),
+        },
       },
     },
   },
