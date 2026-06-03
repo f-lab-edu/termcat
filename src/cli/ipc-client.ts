@@ -15,29 +15,42 @@ export function createIpcClient() {
   let connected = false
 
   return {
-    connect(): void {
-      const sock = createConnection(getSocketPath())
-      socket = sock
+    connect(): Promise<void> {
+      return new Promise((resolve, reject) => {
+        const sock = createConnection(getSocketPath())
+        socket = sock
+        let settled = false
 
-      sock.on('connect', () => {
-        connected = true
-      })
+        sock.on('connect', () => {
+          connected = true
+          if (!settled) {
+            settled = true
+            resolve()
+          }
+        })
 
-      sock.on('error', () => {
-        connected = false
-        socket = null
-      })
+        sock.on('error', (err) => {
+          connected = false
+          socket = null
+          if (!settled) {
+            settled = true
+            reject(err)
+          }
+        })
 
-      sock.on('close', () => {
-        connected = false
-        socket = null
+        sock.on('close', () => {
+          connected = false
+          socket = null
+        })
       })
     },
     send(event: CliEvent): void {
       if (!connected || !socket) return
       try {
         socket.write(JSON.stringify(event) + '\n')
-      } catch {}
+      } catch (err) {
+        process.stderr.write(`[ipc-client] failed to send event: ${err}\n`)
+      }
     },
     disconnect(): void {
       socket?.destroy()
