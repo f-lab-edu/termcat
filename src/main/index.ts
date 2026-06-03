@@ -1,4 +1,4 @@
-import { electronApp, optimizer } from '@electron-toolkit/utils'
+import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { app, Menu, nativeImage, Tray } from 'electron'
 import { join } from 'path'
 
@@ -22,11 +22,25 @@ function createTray(): Tray {
 
   const tray = new Tray(icon)
   tray.setToolTip('termcat')
+  const devItems = is.dev
+    ? [
+        { type: 'separator' as const },
+        {
+          label: '[Dev] Reset Onboarding',
+          click: () => {
+            store.set('onboardingDone', false)
+            openOnboardingWindow()
+          },
+        },
+      ]
+    : []
+
   tray.setContextMenu(
     Menu.buildFromTemplate([
       { label: 'termcat', enabled: false },
       { type: 'separator' },
       { label: 'Quit', role: 'quit' },
+      ...devItems,
     ])
   )
 
