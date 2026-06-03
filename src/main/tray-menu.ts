@@ -26,7 +26,7 @@ export function buildTrayMenu(tray: Tray): void {
       { label: 'termcat', enabled: false },
       { type: 'separator' },
       {
-        label: '로그인 시 자동 시작',
+        label: '데스크탑 실행 시 자동 시작',
         type: 'checkbox',
         checked: openAtLogin,
         click: (menuItem) => {
