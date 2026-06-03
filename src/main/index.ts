@@ -1,5 +1,5 @@
-import { electronApp, is, optimizer } from '@electron-toolkit/utils'
-import { app, Menu, nativeImage, Tray } from 'electron'
+import { electronApp, optimizer } from '@electron-toolkit/utils'
+import { app, nativeImage, Tray } from 'electron'
 import { join } from 'path'
 
 import { createIpcServer } from '@main/ipc-server'
@@ -7,6 +7,7 @@ import { hasAlias, openOnboardingWindow } from '@main/onboarding'
 import { createSessionManager } from '@main/session-manager'
 import { store } from '@main/store'
 import { createTrayAnimator } from '@main/tray-animator'
+import { buildTrayMenu } from '@main/tray-menu'
 import type { SpeedLevel } from '@shared/types'
 
 const TICK_MS = 100
@@ -22,27 +23,7 @@ function createTray(): Tray {
 
   const tray = new Tray(icon)
   tray.setToolTip('termcat')
-  const devItems = is.dev
-    ? [
-        { type: 'separator' as const },
-        {
-          label: '[Dev] Reset Onboarding',
-          click: () => {
-            store.set('onboardingDone', false)
-            openOnboardingWindow()
-          },
-        },
-      ]
-    : []
-
-  tray.setContextMenu(
-    Menu.buildFromTemplate([
-      { label: 'termcat', enabled: false },
-      { type: 'separator' },
-      { label: 'Quit', role: 'quit' },
-      ...devItems,
-    ])
-  )
+  buildTrayMenu(tray)
 
   return tray
 }

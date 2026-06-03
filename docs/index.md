@@ -10,12 +10,12 @@ AI 터미널 세션을 감지하여 시스템 트레이에 고양이 애니메�
 
 | # | 기능 | 파일 | 상태 |
 |---|------|------|------|
-| 01 | [PTY 래퍼 CLI](./features/01-pty-wrapper.md) | `termcat <command>` 실행 진입점 | ⬜ |
-| 02 | [chars/sec 측정 & 속도 분류](./features/02-speed-measurement.md) | 슬라이딩 윈도우 기반 출력 속도 계산 | ⬜ |
-| 03 | [트레이 고양이 애니메이션](./features/03-tray-animation.md) | 픽셀 아트 스프라이트 회전 애니메이션 | ⬜ |
-| 04 | [세션 라이프사이클 관리](./features/04-session-lifecycle.md) | 세션 시작/종료/상태 전이 | ⬜ |
+| 01 | [PTY 래퍼 CLI](./features/01-pty-wrapper.md) | `termcat <command>` 실행 진입점 | ✅ |
+| 02 | [chars/sec 측정 & 속도 분류](./features/02-speed-measurement.md) | 슬라이딩 윈도우 기반 출력 속도 계산 | ✅ |
+| 03 | [트레이 고양이 애니메이션](./features/03-tray-animation.md) | 픽셀 아트 스프라이트 회전 애니메이션 | ✅ |
+| 04 | [세션 라이프사이클 관리](./features/04-session-lifecycle.md) | 세션 시작/종료/상태 전이 | ✅ |
 | 05 | [로그인 시 자동 시작](./features/05-auto-launch.md) | macOS 로그인 항목 등록 | ⬜ |
-| 06 | [첫 실행 온보딩](./features/06-onboarding.md) | shell alias 안내 및 자동 등록 | ⬜ |
+| 06 | [첫 실행 온보딩](./features/06-onboarding.md) | shell alias 안내 및 자동 등록 | ✅ |
 | 07 | [빌드 & 배포](./features/07-build-distribution.md) | `.dmg` 패키지 빌드 파이프라인 | ⬜ |
 
 ### 🟡 Should
