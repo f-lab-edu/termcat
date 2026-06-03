@@ -9,6 +9,31 @@ function getSocketPath(): string {
   return `/tmp/termcat-${uid}.sock`
 }
 
+function parseCliEvent(raw: unknown): CliEvent {
+  if (typeof raw !== 'object' || raw === null) throw new Error('invalid event')
+  const obj = raw as Record<string, unknown>
+
+  if (
+    obj.type === 'session:start' &&
+    typeof obj.pid === 'number' &&
+    typeof obj.command === 'string'
+  ) {
+    return { type: 'session:start', pid: obj.pid, command: obj.command }
+  }
+  if (
+    obj.type === 'session:data' &&
+    typeof obj.pid === 'number' &&
+    typeof obj.chars === 'number' &&
+    typeof obj.timestamp === 'number'
+  ) {
+    return { type: 'session:data', pid: obj.pid, chars: obj.chars, timestamp: obj.timestamp }
+  }
+  if (obj.type === 'session:exit' && typeof obj.pid === 'number' && typeof obj.code === 'number') {
+    return { type: 'session:exit', pid: obj.pid, code: obj.code }
+  }
+  throw new Error(`unknown event type: ${String(obj.type)}`)
+}
+
 function handleConnection(socket: Socket, onEvent: (event: CliEvent) => void): void {
   const sessionPids = new Set<number>()
   let buffer = ''
@@ -20,7 +45,7 @@ function handleConnection(socket: Socket, onEvent: (event: CliEvent) => void): v
     for (const line of lines) {
       if (!line.trim()) continue
       try {
-        const event = JSON.parse(line) as CliEvent
+        const event = parseCliEvent(JSON.parse(line))
         if (event.type === 'session:start') sessionPids.add(event.pid)
         if (event.type === 'session:exit') sessionPids.delete(event.pid)
         onEvent(event)
