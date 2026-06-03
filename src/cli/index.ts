@@ -1,7 +1,7 @@
 import { createIpcClient } from '@cli/ipc-client'
 import { runPtyWrapper } from '@cli/pty-wrapper'
 
-function main(): void {
+async function main(): Promise<void> {
   const [, , command, ...args] = process.argv
 
   if (!command) {
@@ -10,9 +10,13 @@ function main(): void {
   }
 
   const ipc = createIpcClient()
-  ipc.connect()
+  await ipc.connect()
 
   runPtyWrapper(command, args, ipc)
 }
 
-main()
+main().catch((err: unknown) => {
+  const message = err instanceof Error ? err.message : String(err)
+  process.stderr.write(`termcat: failed to connect to daemon (${message})\n`)
+  process.exit(1)
+})
