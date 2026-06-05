@@ -47,7 +47,7 @@ function startCore(tray: Tray): () => void {
 
   let currentLevel: SpeedLevel = 'idle'
 
-  setInterval(() => {
+  const tickerId = setInterval(() => {
     const newLevel = sessionManager.tick()
     if (newLevel !== currentLevel) {
       currentLevel = newLevel
@@ -56,6 +56,7 @@ function startCore(tray: Tray): () => void {
   }, TICK_MS)
 
   return () => {
+    clearInterval(tickerId)
     ipcServer.stop()
     animator.destroy()
   }
