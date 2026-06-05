@@ -10,13 +10,18 @@ async function main(): Promise<void> {
   }
 
   const ipc = createIpcClient()
-  await ipc.connect()
+
+  try {
+    await ipc.connect()
+  } catch {
+    process.stderr.write('[termcat] daemon not running — tracking disabled\n')
+  }
 
   runPtyWrapper(command, args, ipc)
 }
 
 main().catch((err: unknown) => {
   const message = err instanceof Error ? err.message : String(err)
-  process.stderr.write(`termcat: failed to connect to daemon (${message})\n`)
+  process.stderr.write(`termcat: ${message}\n`)
   process.exit(1)
 })

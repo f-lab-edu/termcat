@@ -5,16 +5,19 @@ import { CatSprite, Stack, SwitchCase } from '@renderer/components/index'
 import { OnboardingPrompt } from './components/OnboardingPrompt'
 import { OnboardingSuccess } from './components/OnboardingSuccess'
 import * as s from './Onboarding.css'
+import { useOnboarding } from './useOnboarding'
 
-type Status = 'idle' | 'done' | 'error'
+type Status = 'idle' | 'pending' | 'done' | 'error'
 
 export function Onboarding(): JSX.Element {
+  const onboarding = useOnboarding()
   const [status, setStatus] = useState<Status>('idle')
   const [rcPath, setRcPath] = useState('')
 
   async function handleApply(): Promise<void> {
+    setStatus('pending')
     try {
-      const path = await window.onboarding.apply()
+      const path = await onboarding.apply()
       setRcPath(path)
       setStatus('done')
     } catch {
@@ -24,7 +27,7 @@ export function Onboarding(): JSX.Element {
 
   useEffect(() => {
     if (status !== 'done') return
-    const id = setTimeout(() => window.onboarding.close(), 2000)
+    const id = setTimeout(() => onboarding.close(), 2000)
     return () => clearTimeout(id)
   }, [status])
 
@@ -35,8 +38,9 @@ export function Onboarding(): JSX.Element {
         <SwitchCase
           value={status}
           caseBy={{
-            idle: <OnboardingPrompt isError={false} onApply={handleApply} />,
-            error: <OnboardingPrompt isError={true} onApply={handleApply} />,
+            idle: <OnboardingPrompt isError={false} isPending={false} onApply={handleApply} />,
+            pending: <OnboardingPrompt isError={false} isPending={true} onApply={handleApply} />,
+            error: <OnboardingPrompt isError={true} isPending={false} onApply={handleApply} />,
             done: <OnboardingSuccess rcPath={rcPath} />,
           }}
         />
