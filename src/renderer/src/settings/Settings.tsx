@@ -1,12 +1,59 @@
-import { useEffect, useState } from 'react'
+import { type CSSProperties, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import { Button } from '@renderer/components/index'
 import { createLogger } from '@renderer/logger'
-import type { AIShortcut } from '@shared/types'
+import { type AIShortcut, DEFAULT_SPEED_THRESHOLDS, type SpeedThresholds } from '@shared/types'
 
 import * as s from './Settings.css'
 
 const log = createLogger('settings')
+
+const SMOOTHING_OPTIONS = [1, 2, 3, 5, 8]
+const SAVE_DEBOUNCE_MS = 300
+
+type TooltipPlacement = 'top' | 'right'
+
+function Tooltip({
+  text,
+  placement = 'top',
+}: {
+  text: string
+  placement?: TooltipPlacement
+}): JSX.Element {
+  const [pos, setPos] = useState<CSSProperties | null>(null)
+  const iconRef = useRef<HTMLSpanElement>(null)
+
+  function handleMouseEnter(): void {
+    if (!iconRef.current) return
+    const rect = iconRef.current.getBoundingClientRect()
+    if (placement === 'right') {
+      setPos({ top: rect.top + rect.height / 2, left: rect.right + 6 })
+    } else {
+      setPos({ bottom: window.innerHeight - rect.top + 6, left: rect.left + rect.width / 2 })
+    }
+  }
+
+  return (
+    <span className={s.tooltipWrapper}>
+      <span
+        ref={iconRef}
+        className={s.tooltipIcon}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={() => setPos(null)}
+      >
+        ⓘ
+      </span>
+      {pos !== null &&
+        createPortal(
+          <span className={placement === 'right' ? s.tooltipBoxRight : s.tooltipBox} style={pos}>
+            {text}
+          </span>,
+          document.body
+        )}
+    </span>
+  )
+}
 
 interface DraftState {
   id: string
@@ -83,6 +130,109 @@ function ShortcutForm({
         <Button variant="primary" disabled={!isValid || isSaving} onClick={onSave}>
           저장
         </Button>
+      </div>
+    </div>
+  )
+}
+
+function ThresholdsForm(): JSX.Element {
+  const [thresholds, setThresholds] = useState<SpeedThresholds>(DEFAULT_SPEED_THRESHOLDS)
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    window.thresholds
+      .get()
+      .then(setThresholds)
+      .catch((err) => log.error('failed to load thresholds', err))
+
+    return () => {
+      if (saveTimer.current !== null) clearTimeout(saveTimer.current)
+    }
+  }, [])
+
+  function scheduleSave(next: SpeedThresholds): void {
+    if (saveTimer.current !== null) clearTimeout(saveTimer.current)
+    saveTimer.current = setTimeout(() => {
+      window.thresholds.set(next).catch((err) => log.error('failed to save thresholds', err))
+    }, SAVE_DEBOUNCE_MS)
+  }
+
+  function handleSlowChange(raw: number): void {
+    const slow = Math.min(raw, thresholds.mid - 1)
+    const next = { ...thresholds, slow }
+    setThresholds(next)
+    scheduleSave(next)
+  }
+
+  function handleMidChange(raw: number): void {
+    const mid = Math.max(raw, thresholds.slow + 1)
+    const next = { ...thresholds, mid }
+    setThresholds(next)
+    scheduleSave(next)
+  }
+
+  function handleSmoothingChange(smoothingTicks: number): void {
+    const next = { ...thresholds, smoothingTicks }
+    setThresholds(next)
+    scheduleSave(next)
+  }
+
+  return (
+    <div className={s.section}>
+      <p className={s.sectionTitle}>속도 감지 설정</p>
+
+      <div className={s.sliderRow}>
+        <div className={s.sliderHeader}>
+          <div className={s.labelRow}>
+            <p className={s.label}>느림 감지 (chars/s)</p>
+            <Tooltip text="이 값 이하면 고양이가 천천히 걸어요" />
+          </div>
+          <p className={s.sliderValue}>{thresholds.slow}</p>
+        </div>
+        <input
+          className={s.slider}
+          type="range"
+          min={1}
+          max={thresholds.mid - 1}
+          value={thresholds.slow}
+          onChange={(e) => handleSlowChange(Number(e.target.value))}
+        />
+      </div>
+
+      <div className={s.sliderRow}>
+        <div className={s.sliderHeader}>
+          <div className={s.labelRow}>
+            <p className={s.label}>빠름 감지 (chars/s)</p>
+            <Tooltip text="이 값 이하면 보통 속도, 초과하면 고양이가 달려요" />
+          </div>
+          <p className={s.sliderValue}>{thresholds.mid}</p>
+        </div>
+        <input
+          className={s.slider}
+          type="range"
+          min={thresholds.slow + 1}
+          max={500}
+          value={thresholds.mid}
+          onChange={(e) => handleMidChange(Number(e.target.value))}
+        />
+      </div>
+
+      <div className={s.selectRow}>
+        <div className={s.labelRow}>
+          <p className={s.label}>반응 민감도</p>
+          <Tooltip text="숫자가 클수록 속도 변화에 더 느리게 반응해요" placement="right" />
+        </div>
+        <select
+          className={s.select}
+          value={thresholds.smoothingTicks}
+          onChange={(e) => handleSmoothingChange(Number(e.target.value))}
+        >
+          {SMOOTHING_OPTIONS.map((n) => (
+            <option key={n} value={n}>
+              {n}틱
+            </option>
+          ))}
+        </select>
       </div>
     </div>
   )
@@ -189,6 +339,10 @@ export function Settings(): JSX.Element {
           + 숏컷 추가
         </Button>
       )}
+
+      <div className={s.divider} />
+
+      <ThresholdsForm />
     </div>
   )
 }
