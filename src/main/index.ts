@@ -5,6 +5,7 @@ import { join } from 'path'
 import { createIpcServer } from '@main/ipc-server'
 import { hasAlias, openOnboardingWindow } from '@main/onboarding'
 import { createSessionManager } from '@main/session-manager'
+import { registerSettingsIpcHandlers } from '@main/settings'
 import { store } from '@main/store'
 import { createTrayAnimator } from '@main/tray-animator'
 import { buildTrayMenu } from '@main/tray-menu'
@@ -72,6 +73,8 @@ app.whenReady().then(() => {
   if (process.platform === 'darwin') {
     app.dock.hide()
   }
+
+  registerSettingsIpcHandlers()
 
   const tray = createTray()
   const stop = startCore(tray)

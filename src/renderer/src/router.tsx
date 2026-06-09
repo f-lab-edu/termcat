@@ -1,8 +1,10 @@
 import { App } from './App'
 import { Onboarding } from './onboarding/index'
+import { Settings } from './settings/index'
 
 const pages = {
   onboarding: Onboarding,
+  settings: Settings,
 } as const
 
 type PageKey = keyof typeof pages
