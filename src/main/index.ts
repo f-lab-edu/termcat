@@ -30,7 +30,7 @@ function createTray(): Tray {
 }
 
 function startCore(tray: Tray): () => void {
-  const sessionManager = createSessionManager()
+  const sessionManager = createSessionManager(() => store.get('thresholds'))
   const animator = createTrayAnimator(tray, getSpritesDir())
   animator.setLevel('idle')
 

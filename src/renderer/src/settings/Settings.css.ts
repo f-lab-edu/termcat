@@ -123,3 +123,106 @@ export const empty = style({
   textAlign: 'center',
   padding: vars.space['4'],
 })
+
+export const divider = style({
+  height: '1px',
+  background: vars.color.border.default,
+  margin: `${vars.space['2']} 0`,
+})
+
+export const section = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: vars.space['3'],
+})
+
+export const sectionTitle = style({
+  fontSize: vars.font.size.lg,
+  fontWeight: vars.font.weight.semibold,
+  color: vars.color.text.primary,
+  margin: 0,
+})
+
+export const sliderRow = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: vars.space['1'],
+})
+
+export const sliderHeader = style({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+})
+
+export const labelRow = style({
+  display: 'flex',
+  alignItems: 'center',
+  gap: vars.space['1'],
+})
+
+export const sliderValue = style({
+  fontSize: vars.font.size.xs,
+  color: vars.color.text.secondary,
+  fontFamily: 'monospace',
+  margin: 0,
+})
+
+export const slider = style({
+  width: '100%',
+  accentColor: vars.color.text.primary,
+  cursor: 'pointer',
+})
+
+export const selectRow = style({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: vars.space['1'],
+})
+
+export const select = style({
+  fontSize: vars.font.size.sm,
+  fontFamily: vars.font.family.sans,
+  color: vars.color.text.primary,
+  background: vars.color.bg.surface,
+  border: `1px solid ${vars.color.border.default}`,
+  borderRadius: vars.radius.sm,
+  padding: `${vars.space['1']} ${vars.space['2']}`,
+  outline: 'none',
+  cursor: 'pointer',
+})
+
+export const tooltipWrapper = style({
+  display: 'inline-flex',
+  alignItems: 'center',
+})
+
+export const tooltipIcon = style({
+  fontSize: vars.font.size.xs,
+  color: vars.color.text.muted,
+  cursor: 'help',
+  userSelect: 'none',
+})
+
+const tooltipBase = {
+  position: 'fixed' as const,
+  zIndex: 9999,
+  background: vars.color.bg.surface,
+  border: `1px solid ${vars.color.border.default}`,
+  borderRadius: vars.radius.md,
+  padding: `${vars.space['1']} ${vars.space['2']}`,
+  fontSize: vars.font.size.xs,
+  color: vars.color.text.secondary,
+  whiteSpace: 'nowrap' as const,
+  pointerEvents: 'none' as const,
+}
+
+export const tooltipBox = style({
+  ...tooltipBase,
+  transform: 'translateX(-50%)',
+})
+
+export const tooltipBoxRight = style({
+  ...tooltipBase,
+  transform: 'translateY(-50%)',
+})

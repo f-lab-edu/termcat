@@ -1,7 +1,7 @@
 import { electronAPI } from '@electron-toolkit/preload'
 import { contextBridge, ipcRenderer } from 'electron'
 
-import type { AIShortcut } from '@shared/types'
+import type { AIShortcut, SpeedThresholds } from '@shared/types'
 
 const onboardingAPI = {
   apply: (): Promise<string> => ipcRenderer.invoke('onboarding:apply'),
@@ -16,11 +16,18 @@ const aiShortcutAPI = {
   closeWindow: (): Promise<void> => ipcRenderer.invoke('settings:close'),
 }
 
+const thresholdsAPI = {
+  get: (): Promise<SpeedThresholds> => ipcRenderer.invoke('thresholds:get'),
+  set: (thresholds: SpeedThresholds): Promise<void> =>
+    ipcRenderer.invoke('thresholds:set', thresholds),
+}
+
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('onboarding', onboardingAPI)
     contextBridge.exposeInMainWorld('aiShortcut', aiShortcutAPI)
+    contextBridge.exposeInMainWorld('thresholds', thresholdsAPI)
   } catch (error) {
     console.error(error) // eslint-disable-line no-console
   }
@@ -31,4 +38,6 @@ if (process.contextIsolated) {
   window.onboarding = onboardingAPI
   // @ts-expect-error non-isolated fallback
   window.aiShortcut = aiShortcutAPI
+  // @ts-expect-error non-isolated fallback
+  window.thresholds = thresholdsAPI
 }

@@ -1,6 +1,6 @@
 import type { ElectronAPI } from '@electron-toolkit/preload'
 
-import type { AIShortcut } from '@shared/types'
+import type { AIShortcut, SpeedThresholds } from '@shared/types'
 
 declare global {
   interface Window {
@@ -15,6 +15,10 @@ declare global {
       save: (shortcut: AIShortcut) => Promise<void>
       delete: (id: string) => Promise<void>
       closeWindow: () => Promise<void>
+    }
+    thresholds: {
+      get: () => Promise<SpeedThresholds>
+      set: (thresholds: SpeedThresholds) => Promise<void>
     }
   }
 }

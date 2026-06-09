@@ -12,6 +12,8 @@ export type IpcChannel =
   | 'ai-shortcut:save'
   | 'ai-shortcut:delete'
   | 'settings:close'
+  | 'thresholds:get'
+  | 'thresholds:set'
 
 export interface AIShortcut {
   id: string
@@ -34,11 +36,13 @@ export type SpeedLevel = 'idle' | 'slow' | 'mid' | 'fast'
 export interface SpeedThresholds {
   slow: number
   mid: number
+  smoothingTicks: number
 }
 
 export const DEFAULT_SPEED_THRESHOLDS: SpeedThresholds = {
   slow: 20,
   mid: 100,
+  smoothingTicks: 3,
 }
 
 export type CliEvent =

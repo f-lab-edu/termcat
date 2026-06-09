@@ -1,5 +1,5 @@
 import { createSpeedMonitor, type SpeedMonitor } from '@main/speed-monitor'
-import type { SpeedLevel } from '@shared/types'
+import type { SpeedLevel, SpeedThresholds } from '@shared/types'
 
 interface ActiveSession {
   pid: number
@@ -16,12 +16,17 @@ function maxLevel(levels: SpeedLevel[]): SpeedLevel {
 
 export type SessionManager = ReturnType<typeof createSessionManager>
 
-export function createSessionManager() {
+export function createSessionManager(getThresholds?: () => SpeedThresholds) {
   const sessions = new Map<number, ActiveSession>()
 
   return {
     onStart(pid: number, command: string): void {
-      sessions.set(pid, { pid, command, startedAt: Date.now(), monitor: createSpeedMonitor() })
+      sessions.set(pid, {
+        pid,
+        command,
+        startedAt: Date.now(),
+        monitor: createSpeedMonitor(getThresholds),
+      })
     },
     onData(pid: number, chars: number, timestamp: number): void {
       sessions.get(pid)?.monitor.feed(chars, timestamp)
