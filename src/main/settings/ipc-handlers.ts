@@ -2,7 +2,7 @@ import { ipcMain } from 'electron'
 
 import { store } from '@main/store'
 import { rebuildTrayMenu } from '@main/tray-menu'
-import type { AIShortcut } from '@shared/types'
+import type { AIShortcut, SpeedThresholds } from '@shared/types'
 
 import { closeSettingsWindow } from './window'
 
@@ -31,5 +31,11 @@ export function registerSettingsIpcHandlers(): void {
 
   ipcMain.handle('settings:close', () => {
     closeSettingsWindow()
+  })
+
+  ipcMain.handle('thresholds:get', () => store.get('thresholds'))
+
+  ipcMain.handle('thresholds:set', (_, thresholds: SpeedThresholds) => {
+    store.set('thresholds', thresholds)
   })
 }
