@@ -4,7 +4,20 @@ export type ClaudeModel =
   | 'claude-haiku-4-5-20251001'
   | (string & {})
 
-export type IpcChannel = 'onboarding:apply' | 'onboarding:close' | 'onboarding:skip'
+export type IpcChannel =
+  | 'onboarding:apply'
+  | 'onboarding:close'
+  | 'onboarding:skip'
+  | 'ai-shortcut:list'
+  | 'ai-shortcut:save'
+  | 'ai-shortcut:delete'
+  | 'settings:close'
+
+export interface AIShortcut {
+  id: string
+  name: string
+  command: string
+}
 
 export interface SessionStats {
   model: ClaudeModel | null
