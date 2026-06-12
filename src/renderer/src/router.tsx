@@ -1,10 +1,12 @@
 import { App } from './App'
 import { Onboarding } from './onboarding/index'
+import { Popup } from './popup/Popup'
 import { Settings } from './settings/index'
 
 const pages = {
   onboarding: Onboarding,
   settings: Settings,
+  popup: Popup,
 } as const
 
 type PageKey = keyof typeof pages
