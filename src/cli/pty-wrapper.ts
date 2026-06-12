@@ -1,6 +1,7 @@
 import pty from 'node-pty'
 
 import type { IpcClient } from '@cli/ipc-client'
+import { parseTokenStats } from '@cli/token-parser'
 
 const IPC_TICK_MS = 100
 
@@ -20,6 +21,10 @@ export function runPtyWrapper(command: string, args: string[], ipc: IpcClient): 
   shell.onData((data) => {
     process.stdout.write(data)
     charsBatch += data.length
+    const tokens = parseTokenStats(data)
+    if (tokens !== null) {
+      ipc.send({ type: 'session:stats', pid: shell.pid, tokens })
+    }
   })
 
   process.stdin.setRawMode(true)
