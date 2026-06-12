@@ -3,7 +3,7 @@ import type { Server, Socket } from 'net'
 import { createServer } from 'net'
 
 import { createLogger } from '@main/logger'
-import type { CliEvent } from '@shared/types'
+import type { CliEvent, TokenStats } from '@shared/types'
 
 const log = createLogger('ipc-server')
 
@@ -33,6 +33,14 @@ function parseCliEvent(raw: unknown): CliEvent {
   }
   if (obj.type === 'session:exit' && typeof obj.pid === 'number' && typeof obj.code === 'number') {
     return { type: 'session:exit', pid: obj.pid, code: obj.code }
+  }
+  if (
+    obj.type === 'session:stats' &&
+    typeof obj.pid === 'number' &&
+    typeof obj.tokens === 'object' &&
+    obj.tokens !== null
+  ) {
+    return { type: 'session:stats', pid: obj.pid, tokens: obj.tokens as Partial<TokenStats> }
   }
   throw new Error(`unknown event type: ${String(obj.type)}`)
 }
@@ -64,7 +72,10 @@ function handleConnection(socket: Socket, onEvent: (event: CliEvent) => void): v
     }
   })
 
-  socket.on('error', () => socket.destroy())
+  socket.on('error', (err) => {
+    log.warn('socket error:', err)
+    socket.destroy()
+  })
 }
 
 export type IpcServer = ReturnType<typeof createIpcServer>

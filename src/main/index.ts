@@ -4,12 +4,14 @@ import { join } from 'path'
 
 import { createIpcServer } from '@main/ipc-server'
 import { hasAlias, openOnboardingWindow } from '@main/onboarding'
+import { registerPopupIpcHandlers } from '@main/popup/ipc-handlers'
+import { togglePopup } from '@main/popup/window'
 import { createSessionManager } from '@main/session-manager'
 import { registerSettingsIpcHandlers } from '@main/settings'
 import { store } from '@main/store'
 import { createTrayAnimator } from '@main/tray-animator'
-import { buildTrayMenu } from '@main/tray-menu'
-import type { SpeedLevel } from '@shared/types'
+import { getContextMenu } from '@main/tray-menu'
+import type { CatStyle, SpeedLevel } from '@shared/types'
 
 const TICK_MS = 100
 
@@ -24,29 +26,33 @@ function createTray(): Tray {
 
   const tray = new Tray(icon)
   tray.setToolTip('termcat')
-  buildTrayMenu(tray)
+
+  tray.on('click', (_, bounds) => togglePopup(bounds))
+  tray.on('right-click', () => tray.popUpContextMenu(getContextMenu()))
 
   return tray
 }
 
-function startCore(tray: Tray): () => void {
+function startCore(tray: Tray): { stop: () => void; setStyle: (style: CatStyle) => void } {
   const sessionManager = createSessionManager(() => store.get('thresholds'))
-  const animator = createTrayAnimator(tray, getSpritesDir())
+  let animator = createTrayAnimator(tray, getSpritesDir(), store.get('catStyle'))
   animator.setLevel('idle')
+  let currentLevel: SpeedLevel = 'idle'
 
   const ipcServer = createIpcServer((event) => {
     if (event.type === 'session:start') {
       sessionManager.onStart(event.pid, event.command)
     } else if (event.type === 'session:data') {
       sessionManager.onData(event.pid, event.chars, event.timestamp)
+    } else if (event.type === 'session:stats') {
+      sessionManager.onStats(event.pid, event.tokens)
     } else if (event.type === 'session:exit') {
       sessionManager.onExit(event.pid)
     }
   })
 
+  registerPopupIpcHandlers(sessionManager)
   ipcServer.start()
-
-  let currentLevel: SpeedLevel = 'idle'
 
   const tickerId = setInterval(() => {
     const newLevel = sessionManager.tick()
@@ -56,10 +62,17 @@ function startCore(tray: Tray): () => void {
     }
   }, TICK_MS)
 
-  return () => {
-    clearInterval(tickerId)
-    ipcServer.stop()
-    animator.destroy()
+  return {
+    stop: () => {
+      clearInterval(tickerId)
+      ipcServer.stop()
+      animator.destroy()
+    },
+    setStyle: (style: CatStyle) => {
+      animator.destroy()
+      animator = createTrayAnimator(tray, getSpritesDir(), style)
+      animator.setLevel(currentLevel)
+    },
   }
 }
 
@@ -74,10 +87,10 @@ app.whenReady().then(() => {
     app.dock.hide()
   }
 
-  registerSettingsIpcHandlers()
-
   const tray = createTray()
-  const stop = startCore(tray)
+  const { stop, setStyle } = startCore(tray)
+
+  registerSettingsIpcHandlers(setStyle)
 
   app.on('before-quit', stop)
 
