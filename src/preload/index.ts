@@ -1,7 +1,7 @@
 import { electronAPI } from '@electron-toolkit/preload'
 import { contextBridge, ipcRenderer } from 'electron'
 
-import type { AIShortcut, SpeedThresholds } from '@shared/types'
+import type { AIShortcut, CatStyle, PopupState, SpeedThresholds } from '@shared/types'
 
 const onboardingAPI = {
   apply: (): Promise<string> => ipcRenderer.invoke('onboarding:apply'),
@@ -22,12 +22,24 @@ const thresholdsAPI = {
     ipcRenderer.invoke('thresholds:set', thresholds),
 }
 
+const popupAPI = {
+  getState: (): Promise<PopupState> => ipcRenderer.invoke('popup:get-sessions'),
+  quit: (): Promise<void> => ipcRenderer.invoke('popup:quit'),
+}
+
+const catStyleAPI = {
+  get: (): Promise<CatStyle> => ipcRenderer.invoke('cat-style:get'),
+  set: (style: CatStyle): Promise<void> => ipcRenderer.invoke('cat-style:set', style),
+}
+
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)
     contextBridge.exposeInMainWorld('onboarding', onboardingAPI)
     contextBridge.exposeInMainWorld('aiShortcut', aiShortcutAPI)
     contextBridge.exposeInMainWorld('thresholds', thresholdsAPI)
+    contextBridge.exposeInMainWorld('popup', popupAPI)
+    contextBridge.exposeInMainWorld('catStyle', catStyleAPI)
   } catch (error) {
     console.error(error) // eslint-disable-line no-console
   }
@@ -40,4 +52,8 @@ if (process.contextIsolated) {
   window.aiShortcut = aiShortcutAPI
   // @ts-expect-error non-isolated fallback
   window.thresholds = thresholdsAPI
+  // @ts-expect-error non-isolated fallback
+  window.popup = popupAPI
+  // @ts-expect-error non-isolated fallback
+  window.catStyle = catStyleAPI
 }
