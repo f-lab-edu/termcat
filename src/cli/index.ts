@@ -14,7 +14,7 @@ async function main(): Promise<void> {
   try {
     await ipc.connect()
   } catch {
-    process.stderr.write('[termcat] daemon not running — tracking disabled\n')
+    // daemon not running — tracking disabled silently
   }
 
   runPtyWrapper(command, args, ipc)
