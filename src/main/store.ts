@@ -1,11 +1,17 @@
 import ElectronStore from 'electron-store'
 
-import { type AIShortcut, DEFAULT_SPEED_THRESHOLDS, type SpeedThresholds } from '@shared/types'
+import {
+  type AIShortcut,
+  type CatStyle,
+  DEFAULT_SPEED_THRESHOLDS,
+  type SpeedThresholds,
+} from '@shared/types'
 
 interface StoreSchema {
   onboardingDone: boolean
   aiShortcuts: AIShortcut[]
   thresholds: SpeedThresholds
+  catStyle: CatStyle
 }
 
 export const store = new ElectronStore<StoreSchema>({
@@ -13,5 +19,6 @@ export const store = new ElectronStore<StoreSchema>({
     onboardingDone: false,
     aiShortcuts: [],
     thresholds: DEFAULT_SPEED_THRESHOLDS,
+    catStyle: 'cat',
   },
 })
