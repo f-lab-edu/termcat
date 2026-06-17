@@ -1,6 +1,10 @@
 import { BrowserWindow, type Rectangle, screen } from 'electron'
 import { join } from 'path'
 
+import { createLogger } from '@main/logger'
+
+const log = createLogger('popup-window')
+
 const POPUP_WIDTH = 280
 const POPUP_HEIGHT = 360
 
@@ -28,6 +32,7 @@ function createPopupWindow(): BrowserWindow {
   }
 
   win.on('blur', () => win.hide())
+  win.webContents.on('did-finish-load', () => log.info('popup loaded'))
 
   return win
 }
