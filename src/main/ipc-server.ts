@@ -12,7 +12,7 @@ function getSocketPath(): string {
   return `/tmp/termcat-${uid}.sock`
 }
 
-function parseCliEvent(raw: unknown): CliEvent {
+export function parseCliEvent(raw: unknown): CliEvent {
   if (typeof raw !== 'object' || raw === null) throw new Error('invalid event')
   const obj = raw as Record<string, unknown>
 
