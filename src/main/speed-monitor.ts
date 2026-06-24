@@ -11,6 +11,7 @@ export function createSpeedMonitor(
   let lastLevel: SpeedLevel = 'slow'
   let pendingLevel: SpeedLevel | null = null
   let pendingCount = 0
+  let lastCps = 0
 
   function classify(cps: number): SpeedLevel {
     const { slow, mid } = getThresholds()
@@ -53,8 +54,11 @@ export function createSpeedMonitor(
       const now = Date.now()
       buffer = buffer.filter((e) => now - e.ts <= WINDOW_MS)
       const total = buffer.reduce((sum, e) => sum + e.chars, 0)
-      const cps = total / (WINDOW_MS / 1000)
-      return smooth(classify(cps))
+      lastCps = total / (WINDOW_MS / 1000)
+      return smooth(classify(lastCps))
+    },
+    getCps(): number {
+      return lastCps
     },
   }
 }

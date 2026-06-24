@@ -2,11 +2,11 @@ import { ipcMain } from 'electron'
 
 import { store } from '@main/store'
 import { rebuildTrayMenu } from '@main/tray-menu'
-import type { AIShortcut, SpeedThresholds } from '@shared/types'
+import type { AIShortcut, CatStyle, SpeedThresholds } from '@shared/types'
 
 import { closeSettingsWindow } from './window'
 
-export function registerSettingsIpcHandlers(): void {
+export function registerSettingsIpcHandlers(onCatStyleChange: (style: CatStyle) => void): void {
   ipcMain.handle('ai-shortcut:list', () => store.get('aiShortcuts'))
 
   ipcMain.handle('ai-shortcut:save', (_, shortcut: AIShortcut) => {
@@ -37,5 +37,12 @@ export function registerSettingsIpcHandlers(): void {
 
   ipcMain.handle('thresholds:set', (_, thresholds: SpeedThresholds) => {
     store.set('thresholds', thresholds)
+  })
+
+  ipcMain.handle('cat-style:get', () => store.get('catStyle'))
+
+  ipcMain.handle('cat-style:set', (_, style: CatStyle) => {
+    store.set('catStyle', style)
+    onCatStyleChange(style)
   })
 }

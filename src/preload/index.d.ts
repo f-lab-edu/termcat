@@ -1,6 +1,6 @@
 import type { ElectronAPI } from '@electron-toolkit/preload'
 
-import type { AIShortcut, SpeedThresholds } from '@shared/types'
+import type { AIShortcut, CatStyle, PopupState, SpeedThresholds } from '@shared/types'
 
 declare global {
   interface Window {
@@ -19,6 +19,14 @@ declare global {
     thresholds: {
       get: () => Promise<SpeedThresholds>
       set: (thresholds: SpeedThresholds) => Promise<void>
+    }
+    popup: {
+      getState: () => Promise<PopupState>
+      quit: () => Promise<void>
+    }
+    catStyle: {
+      get: () => Promise<CatStyle>
+      set: (style: CatStyle) => Promise<void>
     }
   }
 }

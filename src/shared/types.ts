@@ -4,6 +4,8 @@ export type ClaudeModel =
   | 'claude-haiku-4-5-20251001'
   | (string & {})
 
+export type CatStyle = 'cat' | 'cat2'
+
 export type IpcChannel =
   | 'onboarding:apply'
   | 'onboarding:close'
@@ -14,6 +16,10 @@ export type IpcChannel =
   | 'settings:close'
   | 'thresholds:get'
   | 'thresholds:set'
+  | 'cat-style:get'
+  | 'cat-style:set'
+  | 'popup:get-sessions'
+  | 'popup:quit'
 
 export interface AIShortcut {
   id: string
@@ -21,6 +27,31 @@ export interface AIShortcut {
   command: string
 }
 
+export type SpeedLevel = 'idle' | 'slow' | 'mid' | 'fast'
+
+export interface TokenStats {
+  model: ClaudeModel | null
+  inputTokens: number
+  outputTokens: number
+  contextWindowSize: number
+  contextUsedPercent: number
+}
+
+export interface SessionSnapshot {
+  pid: number
+  command: string
+  startedAt: number
+  speedLevel: SpeedLevel
+  cps: number
+  tokens: TokenStats | null
+}
+
+export interface PopupState {
+  sessions: SessionSnapshot[]
+  openAtLogin: boolean
+}
+
+/** @deprecated Use SessionSnapshot */
 export interface SessionStats {
   model: ClaudeModel | null
   inputTokens: number
@@ -30,8 +61,6 @@ export interface SessionStats {
   isActive: boolean
   sessionStartedAt: string | null
 }
-
-export type SpeedLevel = 'idle' | 'slow' | 'mid' | 'fast'
 
 export interface SpeedThresholds {
   slow: number
@@ -49,3 +78,4 @@ export type CliEvent =
   | { type: 'session:start'; pid: number; command: string }
   | { type: 'session:data'; pid: number; chars: number; timestamp: number }
   | { type: 'session:exit'; pid: number; code: number }
+  | { type: 'session:stats'; pid: number; tokens: Partial<TokenStats> }

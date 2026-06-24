@@ -192,6 +192,52 @@ export const select = style({
   cursor: 'pointer',
 })
 
+export const styleOptions = style({
+  display: 'flex',
+  gap: vars.space['2'],
+})
+
+const styleOptionBase = {
+  display: 'flex',
+  flexDirection: 'column' as const,
+  gap: vars.space['1'],
+  flex: 1,
+  padding: vars.space['3'],
+  borderRadius: vars.radius.md,
+  border: `1px solid ${vars.color.border.default}`,
+  background: vars.color.bg.surface,
+  textAlign: 'left' as const,
+  cursor: 'pointer',
+}
+
+export const styleOption = style({
+  ...styleOptionBase,
+  selectors: {
+    '&:hover': {
+      borderColor: vars.color.text.secondary,
+    },
+  },
+})
+
+export const styleOptionActive = style({
+  ...styleOptionBase,
+  borderColor: vars.color.text.primary,
+  background: vars.color.bg.overlay,
+})
+
+export const styleOptionName = style({
+  fontSize: vars.font.size.sm,
+  fontWeight: vars.font.weight.semibold,
+  color: vars.color.text.primary,
+  margin: 0,
+})
+
+export const styleOptionDesc = style({
+  fontSize: vars.font.size.xs,
+  color: vars.color.text.muted,
+  margin: 0,
+})
+
 export const tooltipWrapper = style({
   display: 'inline-flex',
   alignItems: 'center',

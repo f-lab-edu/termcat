@@ -3,7 +3,12 @@ import { createPortal } from 'react-dom'
 
 import { Button } from '@renderer/components/index'
 import { createLogger } from '@renderer/logger'
-import { type AIShortcut, DEFAULT_SPEED_THRESHOLDS, type SpeedThresholds } from '@shared/types'
+import {
+  type AIShortcut,
+  type CatStyle,
+  DEFAULT_SPEED_THRESHOLDS,
+  type SpeedThresholds,
+} from '@shared/types'
 
 import * as s from './Settings.css'
 
@@ -130,6 +135,49 @@ function ShortcutForm({
         <Button variant="primary" disabled={!isValid || isSaving} onClick={onSave}>
           저장
         </Button>
+      </div>
+    </div>
+  )
+}
+
+const CAT_STYLE_LABELS: Record<CatStyle, { name: string; desc: string }> = {
+  cat: { name: '픽셀 고양이', desc: '기본 스프라이트' },
+  cat2: { name: '타이핑 고양이', desc: '실사 스타일, 67프레임' },
+}
+
+function CatStyleForm(): JSX.Element {
+  const [selected, setSelected] = useState<CatStyle>('cat')
+
+  useEffect(() => {
+    window.catStyle
+      .get()
+      .then(setSelected)
+      .catch((err) => log.error('failed to load cat style', err))
+  }, [])
+
+  function handleChange(style: CatStyle): void {
+    setSelected(style)
+    window.catStyle.set(style).catch((err) => log.error('failed to save cat style', err))
+  }
+
+  return (
+    <div className={s.section}>
+      <p className={s.sectionTitle}>고양이 스타일</p>
+      <div className={s.styleOptions}>
+        {(Object.keys(CAT_STYLE_LABELS) as CatStyle[]).map((style) => {
+          const { name, desc } = CAT_STYLE_LABELS[style]
+          const isActive = selected === style
+          return (
+            <button
+              key={style}
+              className={isActive ? s.styleOptionActive : s.styleOption}
+              onClick={() => handleChange(style)}
+            >
+              <p className={s.styleOptionName}>{name}</p>
+              <p className={s.styleOptionDesc}>{desc}</p>
+            </button>
+          )
+        })}
       </div>
     </div>
   )
@@ -339,6 +387,10 @@ export function Settings(): JSX.Element {
           + 숏컷 추가
         </Button>
       )}
+
+      <div className={s.divider} />
+
+      <CatStyleForm />
 
       <div className={s.divider} />
 

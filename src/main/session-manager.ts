@@ -1,11 +1,13 @@
 import { createSpeedMonitor, type SpeedMonitor } from '@main/speed-monitor'
-import type { SpeedLevel, SpeedThresholds } from '@shared/types'
+import type { SessionSnapshot, SpeedLevel, SpeedThresholds, TokenStats } from '@shared/types'
 
 interface ActiveSession {
   pid: number
   command: string
   startedAt: number
   monitor: SpeedMonitor
+  lastLevel: SpeedLevel
+  tokens: Partial<TokenStats> | null
 }
 
 const LEVEL_RANK: Record<SpeedLevel, number> = { idle: 0, slow: 1, mid: 2, fast: 3 }
@@ -26,18 +28,38 @@ export function createSessionManager(getThresholds?: () => SpeedThresholds) {
         command,
         startedAt: Date.now(),
         monitor: createSpeedMonitor(getThresholds),
+        lastLevel: 'idle',
+        tokens: null,
       })
     },
     onData(pid: number, chars: number, timestamp: number): void {
       sessions.get(pid)?.monitor.feed(chars, timestamp)
+    },
+    onStats(pid: number, tokens: Partial<TokenStats>): void {
+      const session = sessions.get(pid)
+      if (!session) return
+      session.tokens = { ...session.tokens, ...tokens }
     },
     onExit(pid: number): void {
       sessions.delete(pid)
     },
     tick(): SpeedLevel {
       if (sessions.size === 0) return 'idle'
-      const levels = [...sessions.values()].map((s) => s.monitor.tick())
+      const levels = [...sessions.values()].map((s) => {
+        s.lastLevel = s.monitor.tick()
+        return s.lastLevel
+      })
       return maxLevel(levels)
+    },
+    getSnapshots(): SessionSnapshot[] {
+      return [...sessions.values()].map((s) => ({
+        pid: s.pid,
+        command: s.command,
+        startedAt: s.startedAt,
+        speedLevel: s.lastLevel,
+        cps: s.monitor.getCps(),
+        tokens: s.tokens?.inputTokens !== undefined ? (s.tokens as TokenStats) : null,
+      }))
     },
   }
 }

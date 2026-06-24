@@ -1,19 +1,15 @@
 import { is } from '@electron-toolkit/utils'
-import type { Tray } from 'electron'
 import { app, Menu } from 'electron'
 
 import { openOnboardingWindow } from '@main/onboarding'
 import { launchInTerminal, openSettingsWindow } from '@main/settings'
 import { store } from '@main/store'
 
-let trayRef: Tray | null = null
-
 export function rebuildTrayMenu(): void {
-  if (trayRef) buildTrayMenu(trayRef)
+  // no-op: menu is now built fresh on each right-click via getContextMenu()
 }
 
-export function buildTrayMenu(tray: Tray): void {
-  trayRef = tray
+export function getContextMenu(): Menu {
   const { openAtLogin } = app.getLoginItemSettings()
 
   const shortcuts = store.get('aiShortcuts')
@@ -41,27 +37,24 @@ export function buildTrayMenu(tray: Tray): void {
       ]
     : []
 
-  tray.setContextMenu(
-    Menu.buildFromTemplate([
-      { label: 'termcat', enabled: false },
-      { type: 'separator' },
-      {
-        label: 'AI 실행하기',
-        submenu: Menu.buildFromTemplate(aiSubmenuItems),
+  return Menu.buildFromTemplate([
+    { label: 'termcat', enabled: false },
+    { type: 'separator' },
+    {
+      label: 'AI 실행하기',
+      submenu: Menu.buildFromTemplate(aiSubmenuItems),
+    },
+    { type: 'separator' },
+    {
+      label: '데스크탑 실행 시 자동 시작',
+      type: 'checkbox',
+      checked: openAtLogin,
+      click: (menuItem) => {
+        app.setLoginItemSettings({ openAtLogin: menuItem.checked, openAsHidden: true })
       },
-      { type: 'separator' },
-      {
-        label: '데스크탑 실행 시 자동 시작',
-        type: 'checkbox',
-        checked: openAtLogin,
-        click: (menuItem) => {
-          app.setLoginItemSettings({ openAtLogin: menuItem.checked, openAsHidden: true })
-          buildTrayMenu(tray)
-        },
-      },
-      { type: 'separator' },
-      { label: 'Quit', role: 'quit' },
-      ...devItems,
-    ])
-  )
+    },
+    { type: 'separator' },
+    { label: 'Quit', role: 'quit' },
+    ...devItems,
+  ])
 }
