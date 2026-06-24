@@ -16,21 +16,27 @@ describe('createSpeedMonitor', () => {
       expect(monitor.tick()).toBe('idle')
     })
 
-    it('returns slow for throughput at or below slow threshold', () => {
+    it('returns slow at exactly the slow threshold (inclusive)', () => {
       const monitor = createSpeedMonitor(() => THRESHOLDS)
-      monitor.feed(20, Date.now()) // 20 cps = slow threshold
+      monitor.feed(20, Date.now()) // cps = 20 = slow threshold
       expect(monitor.tick()).toBe('slow')
     })
 
-    it('returns mid for throughput between slow and mid threshold', () => {
+    it('returns mid one above the slow threshold', () => {
       const monitor = createSpeedMonitor(() => THRESHOLDS)
-      monitor.feed(60, Date.now()) // 60 cps, slow=20 < 60 <= mid=100
+      monitor.feed(21, Date.now()) // cps = 21 > slow=20
       expect(monitor.tick()).toBe('mid')
     })
 
-    it('returns fast for throughput above mid threshold', () => {
+    it('returns mid at exactly the mid threshold (inclusive)', () => {
       const monitor = createSpeedMonitor(() => THRESHOLDS)
-      monitor.feed(200, Date.now()) // 200 cps > mid=100
+      monitor.feed(100, Date.now()) // cps = 100 = mid threshold
+      expect(monitor.tick()).toBe('mid')
+    })
+
+    it('returns fast one above the mid threshold', () => {
+      const monitor = createSpeedMonitor(() => THRESHOLDS)
+      monitor.feed(101, Date.now()) // cps = 101 > mid=100
       expect(monitor.tick()).toBe('fast')
     })
   })
@@ -42,10 +48,34 @@ describe('createSpeedMonitor', () => {
       expect(monitor.tick()).toBe('idle')
     })
 
+    it('includes events exactly at the 1-second boundary', () => {
+      vi.useFakeTimers()
+      const t = Date.now()
+      const monitor = createSpeedMonitor(() => THRESHOLDS)
+      monitor.feed(60, t - 1000) // now - ts = 1000 <= 1000 → included
+      expect(monitor.tick()).toBe('mid')
+    })
+
+    it('excludes events just outside the 1-second boundary', () => {
+      vi.useFakeTimers()
+      const t = Date.now()
+      const monitor = createSpeedMonitor(() => THRESHOLDS)
+      monitor.feed(60, t - 1001) // now - ts = 1001 > 1000 → excluded
+      expect(monitor.tick()).toBe('idle')
+    })
+
     it('counts only events within the 1-second window', () => {
       const monitor = createSpeedMonitor(() => THRESHOLDS)
       monitor.feed(500, Date.now() - 1500) // expired
       monitor.feed(60, Date.now()) // active — 60 cps
+      expect(monitor.tick()).toBe('mid')
+    })
+
+    it('accumulates multiple events within the window', () => {
+      const monitor = createSpeedMonitor(() => THRESHOLDS)
+      const now = Date.now()
+      monitor.feed(10, now) // 10 cps
+      monitor.feed(15, now) // +15 cps → total 25 cps > slow=20
       expect(monitor.tick()).toBe('mid')
     })
   })
@@ -103,6 +133,17 @@ describe('createSpeedMonitor', () => {
       monitor.feed(200, Date.now())
       // Default smoothingTicks=3, so won't transition on first tick
       expect(monitor.tick()).not.toBe('idle')
+    })
+
+    it('applies updated thresholds on each tick', () => {
+      let slow = 20
+      const monitor = createSpeedMonitor(() => ({ slow, mid: 100, smoothingTicks: 1 }))
+
+      monitor.feed(15, Date.now()) // 15 cps <= slow=20 → slow
+      expect(monitor.tick()).toBe('slow')
+
+      slow = 10 // threshold lowered — 15 cps now exceeds slow=10
+      expect(monitor.tick()).toBe('mid') // same buffered data, new threshold
     })
   })
 })
