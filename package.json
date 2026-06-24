@@ -11,6 +11,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "electron-vite dev",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "build": "npm run typecheck && electron-vite build",
     "start": "electron-vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.node.json --composite false && tsc --noEmit -p tsconfig.web.json --composite false",
@@ -52,6 +54,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "typescript": "^5.5.2",
-    "vite": "^5.3.1"
+    "vite": "^5.3.1",
+    "vitest": "^4.1.9"
   }
 }
