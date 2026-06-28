@@ -43,7 +43,7 @@ export interface SessionSnapshot {
   startedAt: number
   speedLevel: SpeedLevel
   cps: number
-  tokens: TokenStats | null
+  tokens: Partial<TokenStats> | null
 }
 
 export interface PopupState {

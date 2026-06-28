@@ -53,39 +53,46 @@ function SessionCard({ session }: { session: SessionSnapshot }): JSX.Element {
 
       {tokens !== null && (
         <div className={s.tokenSection}>
-          {tokens.model !== null && (
+          {tokens.model != null && (
             <div className={s.tokenRow}>
               <span className={s.tokenLabel}>모델</span>
               <span className={s.tokenValue}>{tokens.model}</span>
             </div>
           )}
-          <div className={s.tokenRow}>
-            <span className={s.tokenLabel}>입력 토큰</span>
-            <span className={s.tokenValue}>{formatTokens(tokens.inputTokens)}</span>
-          </div>
-          <div className={s.tokenRow}>
-            <span className={s.tokenLabel}>출력 토큰</span>
-            <span className={s.tokenValue}>{formatTokens(tokens.outputTokens)}</span>
-          </div>
-          {tokens.contextWindowSize > 0 && (
-            <>
-              <div className={s.tokenRow}>
-                <span className={s.tokenLabel}>컨텍스트</span>
-                <span className={s.tokenValue}>
-                  {tokens.contextUsedPercent.toFixed(1)}% / {formatTokens(tokens.contextWindowSize)}
-                </span>
-              </div>
-              <div className={s.contextBar}>
-                <div
-                  className={s.contextBarFill}
-                  style={{
-                    width: `${tokens.contextUsedPercent}%`,
-                    background: tokens.contextUsedPercent > 80 ? '#dc2626' : '#4ade80',
-                  }}
-                />
-              </div>
-            </>
+          {tokens.inputTokens !== undefined && (
+            <div className={s.tokenRow}>
+              <span className={s.tokenLabel}>입력 토큰</span>
+              <span className={s.tokenValue}>{formatTokens(tokens.inputTokens)}</span>
+            </div>
           )}
+          {tokens.outputTokens !== undefined && (
+            <div className={s.tokenRow}>
+              <span className={s.tokenLabel}>출력 토큰</span>
+              <span className={s.tokenValue}>{formatTokens(tokens.outputTokens)}</span>
+            </div>
+          )}
+          {tokens.contextWindowSize !== undefined &&
+            tokens.contextWindowSize > 0 &&
+            tokens.contextUsedPercent !== undefined && (
+              <>
+                <div className={s.tokenRow}>
+                  <span className={s.tokenLabel}>컨텍스트</span>
+                  <span className={s.tokenValue}>
+                    {tokens.contextUsedPercent.toFixed(1)}% /{' '}
+                    {formatTokens(tokens.contextWindowSize)}
+                  </span>
+                </div>
+                <div className={s.contextBar}>
+                  <div
+                    className={s.contextBarFill}
+                    style={{
+                      width: `${tokens.contextUsedPercent}%`,
+                      background: tokens.contextUsedPercent > 80 ? '#dc2626' : '#4ade80',
+                    }}
+                  />
+                </div>
+              </>
+            )}
         </div>
       )}
     </div>
