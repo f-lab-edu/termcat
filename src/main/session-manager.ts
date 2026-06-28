@@ -58,7 +58,7 @@ export function createSessionManager(getThresholds?: () => SpeedThresholds) {
         startedAt: s.startedAt,
         speedLevel: s.lastLevel,
         cps: s.monitor.getCps(),
-        tokens: s.tokens?.inputTokens !== undefined ? (s.tokens as TokenStats) : null,
+        tokens: s.tokens ? s.tokens : null,
       }))
     },
   }

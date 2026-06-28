@@ -1,7 +1,7 @@
 import pty from 'node-pty'
 
 import type { IpcClient } from '@cli/ipc-client'
-import { parseTokenStats } from '@cli/token-parser'
+import { createTokenStatsExtractor } from '@cli/token-parser'
 
 const IPC_TICK_MS = 100
 
@@ -17,11 +17,13 @@ export function runPtyWrapper(command: string, args: string[], ipc: IpcClient): 
   ipc.send({ type: 'session:start', pid: shell.pid, command })
 
   let charsBatch = 0
+  const tokenExtractor = createTokenStatsExtractor()
 
   shell.onData((data) => {
     process.stdout.write(data)
     charsBatch += data.length
-    const tokens = parseTokenStats(data)
+
+    const tokens = tokenExtractor.feed(data)
     if (tokens !== null) {
       ipc.send({ type: 'session:stats', pid: shell.pid, tokens })
     }
