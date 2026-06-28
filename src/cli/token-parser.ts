@@ -34,6 +34,24 @@ const CONTEXT_SIZE_RE = /([\d.]+k?)\s+ctx.*?([\d.]+)%/i
 // claude-opus-4-7, claude-sonnet-4-6, etc.
 const MODEL_RE = /claude-(?:opus|sonnet|haiku)-[\w.-]+/i
 
+const TOKEN_BUFFER_MAX = 8192
+
+export interface TokenStatsExtractor {
+  feed(chunk: string): Partial<TokenStats> | null
+}
+
+export function createTokenStatsExtractor(): TokenStatsExtractor {
+  let buffer = ''
+  return {
+    feed(chunk: string): Partial<TokenStats> | null {
+      buffer = (buffer + chunk).slice(-TOKEN_BUFFER_MAX)
+      const result = parseTokenStats(buffer)
+      if (result !== null) buffer = ''
+      return result
+    },
+  }
+}
+
 export function parseTokenStats(chunk: string): Partial<TokenStats> | null {
   const text = stripAnsi(chunk)
   const result: Partial<TokenStats> = {}
