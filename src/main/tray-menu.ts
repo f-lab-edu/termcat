@@ -2,7 +2,7 @@ import { is } from '@electron-toolkit/utils'
 import { app, Menu } from 'electron'
 
 import { openOnboardingWindow } from '@main/onboarding'
-import { launchInTerminal, openSettingsWindow } from '@main/settings'
+import { launchAi, openSettingsWindow } from '@main/settings'
 import { store } from '@main/store'
 
 export function rebuildTrayMenu(): void {
@@ -15,7 +15,7 @@ export function getContextMenu(): Menu {
   const shortcuts = store.get('aiShortcuts')
   const shortcutItems = shortcuts.map((s) => ({
     label: s.name,
-    click: () => launchInTerminal(s.command),
+    click: () => launchAi(s.command),
   }))
 
   const aiSubmenuItems = [

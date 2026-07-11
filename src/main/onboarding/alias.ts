@@ -1,9 +1,9 @@
 import { is } from '@electron-toolkit/utils'
-import { app } from 'electron'
 import { appendFileSync, existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from 'fs'
 import { homedir } from 'os'
 import { join } from 'path'
 
+import { getCliEntryPath } from '@main/cli-path'
 import { createLogger } from '@main/logger'
 
 const log = createLogger('alias')
@@ -37,13 +37,7 @@ function installCli(): void {
   if (is.dev) return
 
   const electronBin = process.execPath
-  const cliPath = join(
-    app.getAppPath().replace('app.asar', 'app.asar.unpacked'),
-    'out',
-    'main',
-    'cli',
-    'index.js'
-  )
+  const cliPath = getCliEntryPath()
   const script = `#!/bin/sh\nexec env ELECTRON_RUN_AS_NODE=1 "${electronBin}" "${cliPath}" "$@"\n`
 
   if (!existsSync(LOCAL_BIN_DIR)) {
